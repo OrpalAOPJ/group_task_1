@@ -1,70 +1,342 @@
-# Getting Started with Create React App
+1. Prepare a base Counter
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+As you know... Redux is store, reducer and actions. So let's set up a store first
 
-## Available Scripts
+2. But before install redux
 
-In the project directory, you can run:
+3. Then create store in Index.js
 
-### `npm start`
+```js
+import { createStore } from "redux";
+const store = createStore();
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+4. Next we need reducers. Reducer is pure function which actually make changes in states. There might be many reducers, so it should be separated file. Collect redux files to reducers folder -> reducer.js. As it is function only, you do not need any react imports but remember to include export.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Then add
 
-### `npm test`
+```js
+const reducer = (state = state, action) => {
+  return state;
+};
+export default reducer;
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+then
 
-### `npm run build`
+```js
+const reducer = (state = initialState, action) => {
+  return state;
+};
+const initialState = {
+  counter: 0,
+};
+export default reducer;
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+5. Let's go back to index.js. We have now reducer which take initialState and returns it. Import reducer in and then add it to store
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```js
+import reducer from "./reducers/reducer";
+const store = createStore(reducer);
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+6. We are almost there.... With Redux. Now we need to connect it with React. Yes, those are different packages.... So go ahead and install new package react-redux
 
-### `npm run eject`
+```
+npm install react-redux
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+7. In index.js connect store and app. For that import Provider and wrap App in to provider
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```js
+import { Provider } from "react-redux";
+const store = createStore(reducer);
+ReactDOM.render(
+  <Provider>
+    {" "}
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+And then connect with created store:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```js
+ReactDOM.render(
+  <Provider store={store}>
+    {" "}
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);
+```
 
-## Learn More
+8. All good so far, right? We have store, we have first reducer but now we need to connect it with our component also. Open counter.js and import connect from react-redux
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```js
+import { connect } from 'react-redux';
+export default connect()(Counter);
+To be sure clean all old states 10. Create new const to get states out from component
+const mapStateToProps = state => {
+return {
+ctr: state.counter,
+};
+};
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+And then add it to connector
 
-### Code Splitting
+```js
+export default connect(mapStateToProps)(Counter);
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+And then read state from ctr
 
-### Analyzing the Bundle Size
+```js
+<div className="counter_text">Your score: {this.props.ctr}</div>
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Reload page and check does it work now?
 
-### Making a Progressive Web App
+9. Ok, we have state coming in! Yeiii! Now we start to modify it. We need mapDispatchToProps which is triggering actions and those will trigger the reducer.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```js
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onIncCounter: () => dispatch({ type: "INCREMENT" }),
+  };
+};
+```
 
-### Advanced Configuration
+Then connect with connector:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```js
+export default connect(mapStateToProps, mapDispatchToProps)(Counter);
+```
 
-### Deployment
+And button clicked:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```js
+<button onClick={this.props.onIncCounter}>Increase one</button>
+```
 
-### `npm run build` fails to minify
+10. Now we need that function what is actually doing something. Reducer.js
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```js
+const reducer = (state = initialState, action) => {
+  if (action.type === "INCREMENT") {
+    return {
+      ...state,
+      counter: state.counter + 1,
+    };
+  }
+  return state;
+};
+```
+
+11. So let's do other buttons also
+
+```js
+  const mapDispatchToProps = dispatch => {
+  return {
+  onIncCounter: () => dispatch({type: "INCREMENT"}),
+  onDecCounter: () => dispatch({type: 'DECREMENT'}),
+  resetCounter: () => dispatch({type: 'RESET'}),
+  }
+  }
+
+  <button onClick={this.props.onIncCounter}>Increase one</button>
+  <button onClick={this.props.onDecCounter}>Decrease one</button>
+  <button onClick={this.props.resetCounter}>Reset</button>
+
+  if (action.type === "INCREMENT") {
+  return {
+  ...state, counter:state.counter +1
+  }
+  }
+  if (action.type === "DECREMENT") {
+  return {
+  ...state, counter:state.counter -1
+  }
+  }
+  if (action.type === "RESET") {
+  return {
+  ...state, counter: 0
+  }
+  }
+```
+
+11. It works and juhuu! Two things we could make better. First is that in reducer we repeat code. Perfect here is to use switch
+
+```js
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case "INCREMENT":
+      return { ...state, counter: state.counter + 1 };
+    case "DECREMENT":
+      return { ...state, counter: state.counter - 1 };
+    case "RESET":
+      return { ...state, counter: 0 };
+  }
+  return state;
+};
+```
+
+12. Second thing we can improve is to get more control about actions. Currently if you make typo, then well, it is what it is. So let's separate actions. Folder actions and actions.js
+
+```js
+export const INCREMENT = "INCREMENT";
+export const DECREMENT = "DECREMENT";
+export const RESET = "RESET";
+```
+
+Then import it in to counter.js
+
+```js
+  import \* as actionTypes from "../actions/actions";
+```
+
+And
+
+```js
+  onIncCounter: () => dispatch({ type: actionTypes.INCREMENT }),
+  onDecCounter: () => dispatch({ type: actionTypes.DECREMENT }),
+  resetCounter: () => dispatch({ type: actionTypes.RESET }),
+```
+
+Then reducer.js
+
+```js
+  import \* as actionTypes from "../actions/actions";
+
+  const reducer = (state = initialState, action) => {
+  switch (action.type) {
+  case actionTypes.INCREMENT:
+  return { ...state, counter: state.counter + 1 };
+  case actionTypes.DECREMENT:
+  return { ...state, counter: state.counter - 1 };
+  case actionTypes.RESET:
+  return { ...state, counter: 0 };
+  }
+  return state;
+  };
+```
+
+13. Let's see how to pass data with the action. Instead of manually entering added value, we will pass it with dispatching action:
+
+Counter.js
+
+```js
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onAddFive: () => dispatch({ type: actionTypes.ADD, value: 5 }),
+    onRemoveFive: () => dispatch({ type: actionTypes.REMOVE, value: 5 }),
+  };
+};
+```
+
+reducer.js
+
+```js
+    case actionTypes.ADD:
+      return { ...state, counter: state.counter + action.value };
+    case actionTypes.REMOVE:
+      return { ...state, counter: state.counter - action.value };
+```
+
+14. Now, let's try to store results in array.
+    First make a button and then add empty array to initialState. Then make dispatch actions, update actions and set case in reducer.
+
+reducer.js - make empty array
+
+```js
+const initialState = {
+  counter: 0,
+  results: [],
+};
+```
+
+Counter.js - make props
+
+```js
+    onStoreResult: () => dispatch({ type: actionTypes.STORE_RESULT }),
+```
+
+actions.js - make new const
+
+```js
+export const STORE_RESULT = "STORE_RESULT";
+```
+
+reducer.js - add case
+
+```js
+    case actionTypes.STORE_RESULT:
+      return {
+        ...state,
+        results: state.results.concat({ id: new Date(), value: state.counter }),
+      };
+```
+
+Counter.js - use map method to display array and remember to use mapStateToProps for getting that array from the state
+
+```js
+<ul>
+  {this.props.storedResults.map((item) => (
+    <li key={item.id} onClick={() => this.props.onDeleteResult(item.id)}>
+      {item.value}
+    </li>
+  ))}
+</ul>
+...
+
+const mapStateToProps = (state) => {
+  return {
+    ctr: state.counter,
+    storedResults: state.results,
+  };
+};
+
+```
+
+15. Remove list items on click. For that we need to know what li element you clicked. We use binding to send item id with click and then filtering to "remove" that id from the array.
+
+actions.js - new const
+
+```js
+export const DELETE_RESULT = "DELETE_RESULT";
+```
+
+reducer.js - new case
+
+```js
+    case actionTypes.DELETE_RESULT:
+      const updatedArray = state.results.filter(
+        (item) => item.id !== action.item
+      );
+      return {
+        ...state,
+        results: updatedArray,
+      };
+```
+
+Counter.js - new dispatch action and onclick triger
+
+```js
+          <ul>
+            {this.props.storedResults.map((item) => (
+              <li
+                key={item.id}
+                onClick={() => this.props.onDeleteResult(item.id)}
+              >
+                {item.value}
+              </li>
+            ))}
+          </ul>
+...
+
+    onDeleteResult: (id) =>
+      dispatch({ type: actionTypes.DELETE_RESULT, item: id }),
+```

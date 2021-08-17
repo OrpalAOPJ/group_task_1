@@ -45,8 +45,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onIncCounter: () => dispatch({ type: actionTypes.INCREMENT }),
     onDecCounter: () => dispatch({ type: actionTypes.DECREMENT }),
-    onAddFive: () => dispatch({ type: actionTypes.ADD, value: 50 }),
-    onRemoveFive: () => dispatch({ type: actionTypes.REMOVE, value: 50 }),
+    onAddFive: () => dispatch({ type: actionTypes.ADD, value: 5 }),
+    onRemoveFive: () => dispatch({ type: actionTypes.REMOVE, value: 5 }),
     resetCounter: () => dispatch({ type: actionTypes.RESET }),
     onStoreResult: () => dispatch({ type: actionTypes.STORE_RESULT }),
     onDeleteResult: (id) =>

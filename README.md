@@ -1,3 +1,5 @@
+![example workflow](https://github.com/OrpalAOPJ/group_task_1/actions/workflows/main.yml/badge.svg)
+
 1. Prepare a base Counter
 
 As you know... Redux is store, reducer and actions. So let's set up a store first

@@ -7,7 +7,8 @@ class Counter extends Component {
   render() {
     return (
       <div>
-        <h1>Your score: {this.props.ctr}</h1>
+        <h1>Simple React-Redux counter</h1>
+        <h2>Your score: {this.props.ctr}</h2>
         <div>
           <button onClick={this.props.onIncCounter}>Add one</button>
           <button onClick={this.props.onDecCounter}>Remove one</button>
